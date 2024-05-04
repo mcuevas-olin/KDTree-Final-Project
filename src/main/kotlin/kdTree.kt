@@ -89,61 +89,45 @@ class kdTree(points: MutableList<Point>) {
      * @return The nearest neighbor to the target point.
      */
     fun nearestNeighbor(target: Point): TreeNode<Point>? {
-        return nearestNeighborSearch(rootNode, target, rootNode)
-    }
+        val nearestNeighborQueue = PriorityQueue<TreeNode<Point>>(Comparator { n1, n2 ->
+            // Compare nodes based on their distance to the target point
+            euclideanDistance(n1.value, target).compareTo(euclideanDistance(n2.value, target))
+        })
 
-    /**
-     * Helper function for performing nearest neighbor search recursively.
-     *
-     * @param node The current node being considered.
-     * @param target The target point for which to find the nearest neighbor.
-     * @param currentBestNode The current best node found so far.
-     * @return The nearest neighbor to the target point.
-     */
-    private fun nearestNeighborSearch(node: TreeNode<Point>?, target: Point, currentBestNode: TreeNode<Point>?): TreeNode<Point>? {
-        if (node == null) {
-            return currentBestNode
-        }
+        // Initialize with the root node
+        nearestNeighborQueue.offer(rootNode)
 
-        var nearestNode = currentBestNode
-        var nearestDistance = currentBestNode?.let { euclideanDistance(it.value, target) } ?: Double.MAX_VALUE
-        val currentDistance = euclideanDistance(node.value, target)
+        // Initialize the nearest node and distance
+        var nearestNode: TreeNode<Point>? = null
+        var nearestDistance = Double.MAX_VALUE
 
-        if (currentDistance < nearestDistance) {
-            nearestNode = node
-            nearestDistance = currentDistance
-        }
+        while (nearestNeighborQueue.isNotEmpty()) {
+            val node = nearestNeighborQueue.poll()
+            val currentDistance = euclideanDistance(node.value, target)
 
-        val axis = node.value.size // Assuming the node's value represents the dimensionality of the point
+            // Update nearest node and distance if current node is closer
+            if (currentDistance < nearestDistance) {
+                nearestNode = node
+                nearestDistance = currentDistance
+            }
 
-        val nearerChild: TreeNode<Point>?
-        val furtherChild: TreeNode<Point>?
-        if (target[axis % node.value.size] < node.value[axis % node.value.size]) {
-            nearerChild = node.left
-            furtherChild = node.right
-        } else {
-            nearerChild = node.right
-            furtherChild = node.left
-        }
+            // Determine which child node to search first based on the target point's position relative to the current node
+            val axis = node.value.size
+            val nearerChild = if (target[axis % node.value.size] < node.value[axis % node.value.size]) node.left else node.right
+            val furtherChild = if (nearerChild == node.left) node.right else node.left
 
-        // Recursively search the nearer child
-        val nearerNeighbor = nearestNeighborSearch(nearerChild, target, nearestNode)
+            // Recursively search the nearer child
+            nearerChild?.let { nearestNeighborQueue.offer(it) }
 
-        if (nearerNeighbor != null && euclideanDistance(nearerNeighbor.value, target) < nearestDistance) {
-            nearestNode = nearerNeighbor
-            nearestDistance = euclideanDistance(nearerNeighbor.value, target)
-        }
-
-        // Check if it's necessary to search the further child
-        if (abs(target[axis % node.value.size] - node.value[axis % node.value.size]) < nearestDistance) {
-            val furtherNeighbor = nearestNeighborSearch(furtherChild, target, nearestNode)
-            if (furtherNeighbor != null && euclideanDistance(furtherNeighbor.value, target) < nearestDistance) {
-                nearestNode = furtherNeighbor
+            // Check if it's necessary to search the further child
+            if (furtherChild != null && abs(target[axis % node.value.size] - node.value[axis % node.value.size]) < nearestDistance) {
+                nearestNeighborQueue.offer(furtherChild)
             }
         }
 
         return nearestNode
     }
+
 
     /**
      * Finds the k nearest neighbors to a given target point in the k-d tree.
@@ -153,16 +137,26 @@ class kdTree(points: MutableList<Point>) {
      * @return A list containing the k nearest neighbors to the target point.
      */
     fun kNearestNeighbors(target: Point, k: Int): List<TreeNode<Point>> {
-        // Initialize a list to store the nearest neighbors
-        val nearestNeighbors = mutableListOf<TreeNode<Point>>()
+        // Initialize a priority queue to store the nearest neighbors
+        val nearestNeighbors = PriorityQueue<TreeNode<Point>> { n1, n2 ->
+            // Compare nodes based on their distance to the target point
+            euclideanDistance(n1.value, target).compareTo(euclideanDistance(n2.value, target))
+        }
 
         // Perform nearest neighbor search starting from the root node
         kNearestNeighborsSearch(rootNode, target, k, nearestNeighbors)
 
-        // Return the list of k nearest neighbors
-        return nearestNeighbors
-    }
+        // Initialize a list to store the k nearest neighbors
+        val result = mutableListOf<TreeNode<Point>>()
 
+        // Add the k nearest neighbors from the priority queue to the list
+        repeat(k) {
+            nearestNeighbors.poll()?.let { result.add(it) }
+        }
+
+        // Return the list of k nearest neighbors
+        return result
+    }
 
     /**
      * Finds the k nearest neighbors to a given target point in the k-d tree.
@@ -170,10 +164,10 @@ class kdTree(points: MutableList<Point>) {
      * @param node The current node being considered.
      * @param target The target point for which to find the k nearest neighbors.
      * @param k The number of nearest neighbors to find.
-     * @param currentBestNodes A list containing the current k nearest neighbor nodes found so far.
-     * @return A list of the k nearest neighbor nodes to the target point.
+     * @param currentBestNodes A priority queue containing the current k nearest neighbor nodes found so far.
+     * @return A priority queue of the k nearest neighbor nodes to the target point.
      */
-    private fun kNearestNeighborsSearch(node: TreeNode<Point>?, target: Point, k: Int, currentBestNodes: MutableList<TreeNode<Point>>): MutableList<TreeNode<Point>> {
+    private fun kNearestNeighborsSearch(node: TreeNode<Point>?, target: Point, k: Int, currentBestNodes: PriorityQueue<TreeNode<Point>>): PriorityQueue<TreeNode<Point>> {
         if (node == null) {
             return currentBestNodes
         }
@@ -181,31 +175,25 @@ class kdTree(points: MutableList<Point>) {
         // Calculate the distance between the target point and the current node
         val currentDistance = euclideanDistance(node.value, target)
 
+        // Update the priority queue of k nearest nodes if necessary
+        if (currentBestNodes.size < k || currentDistance < euclideanDistance(currentBestNodes.peek().value, target)) {
+            currentBestNodes.offer(node)
 
-        // Update the list of k nearest nodes if necessary
-        if (currentBestNodes.isEmpty() || currentBestNodes.size < k || currentDistance < euclideanDistance(currentBestNodes.last().value, target)) {
-            // Insert the current node into the list of k nearest nodes, maintaining sorted order
-            val insertionIndex = currentBestNodes.binarySearchBy(currentDistance) { euclideanDistance(it.value, target) }
-            currentBestNodes.add(if (insertionIndex >= 0) insertionIndex else -insertionIndex - 1, node)
-
-            // If the list exceeds k elements, remove the farthest node
+            // If the queue exceeds k elements, remove the farthest node
             if (currentBestNodes.size > k) {
-                currentBestNodes.removeAt(k)
+                currentBestNodes.poll()
             }
         }
 
-
-
-        // Determine which child node to search first based on the target point's position relative to the current node
         val axis = node.value.size // Assuming the node's value represents the dimensionality of the point
-        val nearerChild = if (target[axis % node.value.size] < node.value[axis % node.value.size]) node.left else node.right
-        val furtherChild = if (nearerChild == node.left) node.right else node.left
 
         // Recursively search the nearer child
+        val nearerChild = if (target[axis % node.value.size] < node.value[axis % node.value.size]) node.left else node.right
         kNearestNeighborsSearch(nearerChild, target, k, currentBestNodes)
 
         // Check if it's necessary to search the further child
-        if (abs(target[axis % node.value.size] - node.value[axis % node.value.size]) < euclideanDistance(currentBestNodes.last().value, target)) {
+        if (abs(target[axis % node.value.size] - node.value[axis % node.value.size]) < euclideanDistance(currentBestNodes.peek().value, target)) {
+            val furtherChild = if (nearerChild == node.left) node.right else node.left
             kNearestNeighborsSearch(furtherChild, target, k, currentBestNodes)
         }
 
@@ -221,13 +209,20 @@ class kdTree(points: MutableList<Point>) {
      * @param distance The maximum distance within which points should be considered.
      * @return A list containing all points within the specified distance of the query point.
      */
-
     fun pointsWithinDistance(queryPoint: Point, distance: Double): List<Point> {
         val nearbyPoints = PriorityQueue<Pair<Double, Point>>(compareByDescending { it.first })
         findPointsWithinDistance(rootNode, queryPoint, distance, nearbyPoints)
         return nearbyPoints.sortedBy { it.first }.map { it.second }
     }
 
+    /**
+     * Recursively finds all points within a given distance of a query point in the k-d tree.
+     *
+     * @param node The current node being considered.
+     * @param queryPoint The query point for which to find nearby points.
+     * @param distance The maximum distance within which points should be considered.
+     * @param nearbyPoints A priority queue to store points within the specified distance.
+     */
     private fun findPointsWithinDistance(node: TreeNode<Point>?, queryPoint: Point, distance: Double, nearbyPoints: PriorityQueue<Pair<Double, Point>>) {
         if (node == null) {
             return
@@ -250,6 +245,7 @@ class kdTree(points: MutableList<Point>) {
             findPointsWithinDistance(node.right, queryPoint, distance, nearbyPoints)
         }
     }
+
 
     /**
  * Implementation of Merge Sort algorithm to sort a list of points based on a specific axis.
