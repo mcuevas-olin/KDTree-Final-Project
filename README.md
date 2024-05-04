@@ -68,7 +68,7 @@ class kdTree(points: MutableList<Point>) {
         return root
     }
 }
-
+```
 
 ### 2. Nearest Neighbor Search
 
@@ -273,7 +273,7 @@ private fun findPointsWithinDistance(node: TreeNode<Point>?, queryPoint: Point, 
         findPointsWithinDistance(node.right, queryPoint, distance, nearbyPoints)
     }
 }
-
+```
 
 ### 5. Sorting
 
