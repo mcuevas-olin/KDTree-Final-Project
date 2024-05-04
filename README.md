@@ -1,6 +1,7 @@
 # kdTree Final Project
+#### Ale Cuevas
 
-For the final project, I developed a Kotlin implementation of a kdTree class, leveraging the k-d tree data structure to facilitate efficient spatial partitioning and nearest neighbor search operations for multidimensional data.
+For the final project, I developed a Kotlin implementation of a kdTree class, leveraging the k-d tree data structure to facilitate efficient spatial partitioning and nearest neighbor search operations for multidimensional data. 
 
 ## Functionality
 
@@ -74,7 +75,7 @@ class kdTree(points: MutableList<Point>) {
 
 **nearestNeighbor(target: Point): TreeNode<Point>?**
 
-This function returns the node of the nearest neighbor to a given target point of the same dimensionality within the k-d tree.
+This function returns the node of the nearest neighbor to a given target point of the same dimensionality within the k-d tree. The algorithm is the basis off of which all of the other searches are based off of.
 
 #### Algorithm Steps:
 
