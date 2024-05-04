@@ -3,6 +3,10 @@
 
 For the final project, I developed a Kotlin implementation of a kdTree class, leveraging the k-d tree data structure to facilitate efficient spatial partitioning and nearest neighbor search operations for multidimensional data. 
 
+A kd tree is a binary tree data structure that hierarchically organizes multidimensional data points. It selects a point to partition the data amoung alternating dimensions at each level. Properly implemented, this results in a balanced tree structure, enabling the efficiency of a variety of different search operations in multidimensional space.
+
+However, there are some drawbacks. For one, there is a very high initial constructions cost, being very computationally expensive, especially for larger and high dimensional datasets. In addition, there is the space overhead as a result of the additional memory needed for storing the tree data structure. This overhead can become quite large, especially with larger datasets. There is another thing called "the curse of dimensionality". In other words, as the dimensionality of the data increases, performance can decrease by a significant amount. It is also difficult to dynamically change or update k-d trees, especially while trying to keep the tree balanced. In fact, my code does not bother to do it at all. If there is a significant change in data, it is often more efficient to simply reconstruct the entire tree from scratch. 
+
 ## Functionality
 
 ### 1. Construction
