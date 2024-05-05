@@ -365,6 +365,33 @@ Prints the structure of the k-d tree, including each node's value and depth.
 
 ## Usage
 
-The kdTree class is versatile and can be applied to various spatial data analysis tasks, including nearest neighbor search, clustering, and efficient range queries in multidimensional space. For example, it can be used in GPS applications to find nearby points of interest such as coffee shops. Examples of usage scenarios include finding all coffee shops within a given radius using Points Within Distance Search, identifying the 5 closest coffee shops using k Nearest Neighbors search, or simply determining the closest coffee shop using nearest neighbor search.
+The kdTree class is versatile and can be applied to various spatial data analysis, geographic informational systems, machine learning, image processing, and recommendation system tasks by leveraging its efficient multidimensional search operations which include nearest neighbor search, clustering, and range queries. For example, it can be used in geographic information services to find nearby points of interest such as coffee shops. Examples of usage scenarios include finding all coffee shops within a given radius using Points Within Distance Search, identifying the 5 closest coffee shops using k Nearest Neighbors search, or simply determining the closest coffee shop using nearest neighbor search.
 
 It's important to note that kd trees require more computational power during creation to make future queries faster. The balanced structure of the tree is preserved, and no nodes can be added or removed once created. To modify the tree, a new one must be created. While it's possible to develop algorithms to add, remove, or change node values while keeping the tree balanced, creating a new tree is simpler from a programming perspective.
+
+
+# K-D project proposal 
+## Project Plan: kdTree Implementation
+
+### Main Idea:
+The project involves implementing a kdTree class in Kotlin to facilitate efficient spatial partitioning and nearest neighbor search operations for multidimensional data.
+
+### Learning Goals:
+- Gain a deeper understanding of tree data structures and algorithms, particularly kd trees.
+- Improve proficiency in Kotlin programming.
+- Learn about the benefits and detriments of using kd trees.
+
+### Deliverables:
+1. **kdTree Class Implementation**: Implement the kdTree class in Kotlin, including methods for construction, nearest neighbor search, k nearest neighbors search, points within distance search, merge sorting during construction, and tree visualization.
+2. **Unit Tests**: Develop comprehensive unit tests to validate the correctness and robustness of the kdTree implementation.
+3. **Project Summary**: Create detailed summary explaining the functionality of each method, algorithm steps, and usage examples.
+4. **Usage Example**: In the documentaion provide an example of how the different search algorithms could be used for a mundane task. In addition, it will provide the benefits and 
+
+### Educational Value of Deliverables:
+- **Documentation**: The detailed documentation will serve as a valuable resource for others in the course, offering insights into the implementation details, algorithmic approaches, and usage guidelines.
+- **Unit Tests**: By sharing comprehensive unit tests, others can validate their understanding of the kdTree implementation and use them as reference points for their own implementations.
+- **Usage Example**: Providing a mundane clear and practical usage example will enable others to quickly grasp the capabilities of the kdTree class and apply it to their own projects or learning exercises.
+- **Lesson Continuation**: In addition, this expands upon the already presented knowledge of binary search trees that was just covered in class, and serves as a potential continuation of that lesson.
+
+### Project Schedule
+Due to my current health, it is really hard to create and stick to a schedule. I planned on doing what I could when I could and hopefully finishing it as soon as possible. That said, I created the general plan for what I was going to do, as well as research and psuedocode for the algorithm itself on Wednesday. Factors unfortunately aligned so that Thursday I had to rest to take care of my health, but then I dedicated Friday and Saturday to completing the project. I wrote and had the code almost finished for Friday, and Saturday was spent mostly on the write up. 
